@@ -34,18 +34,28 @@ Desabilitar o botão de enviar caso todos os campos não estejam preenchidos/vá
 Ao enviar, deve-se apresentar um alert javascript com sucesso, limpar todos os campos
 do formulário e zerar a barra de progresso novamente.
 */
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState } from "react";
 
 const schema = yup
   .object({
-    name: yup.string().required("O nome é obrigatório!"),
+    name: yup
+      .string("Digite nome e sobrenome")
+      .required("O nome é obrigatório!")
+      .matches(
+        /\b[A-Za-zÀ-ú][A-Za-zÀ-ú]+,?\s[A-Za-zÀ-ú][A-Za-zÀ-ú]{2,19}\b/gi,
+        "Digite nome e Sobrenome"
+      ),
     email: yup
       .string()
       .email("Digite um e-mail válido")
-      .required("O email é obrigatório!"),
+      .required("O email é obrigatório!")
+      .matches(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "Digite um e-mail válido"
+      ),
     gender: yup.string().required("Selecione uma opção!").nullable(),
     civilStatus: yup
       .string()
@@ -61,39 +71,27 @@ function App() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
+  const [name, setName] = useState("");
   const onSubmit = (e) => {
-    console.log(e);
+    setName(e.name);
   };
-
   return (
     <div className="App">
       <form className="form-group" onSubmit={handleSubmit(onSubmit)}>
         <h1>progresso do formulário</h1>
-        <div> {/* crie a barra de progresso aqui */}</div>
+        <div className="bar-container">
+          <div className="bar"></div>
+        </div>
         <label htmlFor="name">Nome Completo</label>
         <input type="text" name="name" id="name" {...register("name")} />
         <span className="error-message"> {errors.name?.message}</span>
 
         <label htmlFor="email">E-mail</label>
-        <input
-          type="text"
-          name="email"
-          id="email"
-          {...register("email", {
-            pattern: {
-              required: true,
-              value:
-                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            },
-          })}
-        />
+        <input type="text" name="email" id="email" {...register("email")} />
         <span className="error-message">{errors.email?.message}</span>
 
         <label htmlFor="">Estado Civil</label>
-        <select
-          name="civilStatus"
-          {...register("civilStatus", { required: true })}
-        >
+        <select name="civilStatus" {...register("civilStatus")}>
           <option value="">- selecione...</option>
           <option value="solteiro">Solteiro</option>
           <option value="casado">Casado</option>
@@ -124,7 +122,14 @@ function App() {
         </div>
         <span className="error-message"> {errors.gender?.message}</span>
 
-        <button type="submit">Enviar Formulário</button>
+        <button
+          type="submit"
+          disabled={
+            errors.name || errors.email || errors.civilStatus || errors.gender
+          }
+        >
+          Enviar Formulário
+        </button>
       </form>
     </div>
   );
