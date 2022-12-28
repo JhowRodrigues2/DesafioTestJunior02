@@ -1,4 +1,4 @@
-# DESAFIO REACT.js de entrevista nível JÚNIOR
+# DESAFIO REACT.js de entrevista nível JÚNIOR 02
 
 Encontrei esse desafio no Youtube de uma entrevista para vaga Júnior, e realizei as tarefas solicitadas.
 <br/><br/>
