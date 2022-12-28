@@ -43,3 +43,11 @@ Desabilitar o botão de enviar caso todos os campos não estejam preenchidos/vá
 
 Ao enviar, deve-se apresentar um alert javascript com sucesso, limpar todos os campos
 do formulário e zerar a barra de progresso novamente.
+
+<br/>
+<h1>  💊💊 Technologies </h1>
+
+- [ReactJS](https://https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Yup](https://github.com/jquense/yup)
