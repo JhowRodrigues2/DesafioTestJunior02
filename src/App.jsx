@@ -34,10 +34,11 @@ Desabilitar o botão de enviar caso todos os campos não estejam preenchidos/vá
 Ao enviar, deve-se apresentar um alert javascript com sucesso, limpar todos os campos
 do formulário e zerar a barra de progresso novamente.
 */
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const schema = yup
   .object({
@@ -71,12 +72,27 @@ function App() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState();
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [civilStatus, setCivilStatus] = useState("");
+  const [dataForm, setDataForm] = useState([]);
+  const [saveData, setSaveData] = useState(false);
 
-  const onSubmit = (e) => {};
+  const onSubmit = (e) => {
+    setDataForm(e);
+    setSaveData(true);
+    alert("Dados Salvos com Sucesso!!");
+  };
+
+  useEffect(() => {
+    if (saveData) {
+      setName("");
+      setEmail("");
+      setGender("");
+      setCivilStatus("");
+    }
+  }, [dataForm]);
 
   function counterPercent() {
     let value = 0;
@@ -97,7 +113,6 @@ function App() {
     return value;
   }
   counterPercent();
-
   return (
     <div className="App">
       <form className="form-group" onSubmit={handleSubmit(onSubmit)}>
@@ -115,7 +130,8 @@ function App() {
           type="text"
           name="name"
           id="name"
-          {...register("name", { onBlur: (e) => setName(e.target.value) })}
+          value={name}
+          {...register("name", { onChange: (e) => setName(e.target.value) })}
         />
         <span className="error-message"> {errors.name?.message}</span>
 
@@ -124,16 +140,18 @@ function App() {
           type="text"
           name="email"
           id="email"
-          {...register("email", { onBlur: (e) => setEmail(e.target.value) })}
+          value={email}
+          {...register("email", { onChange: (e) => setEmail(e.target.value) })}
         />
 
         <span className="error-message">{errors.email?.message}</span>
 
         <label htmlFor="">Estado Civil</label>
         <select
+          value={civilStatus}
           name="civilStatus"
           {...register("civilStatus", {
-            onBlur: (e) => setCivilStatus(e.target.value),
+            onChange: (e) => setCivilStatus(e.target.value),
           })}
         >
           <option value="">- selecione...</option>
@@ -153,6 +171,7 @@ function App() {
               {...register("gender", {
                 onChange: (e) => setGender(e.target.value),
               })}
+              checked={gender === "masculino"}
             />
             Masculino
           </span>
@@ -161,7 +180,10 @@ function App() {
               type="radio"
               name="gender"
               value="feminino"
-              {...register("gender")}
+              {...register("gender", {
+                onChange: (e) => setGender(e.target.value),
+              })}
+              checked={gender === "feminino"}
             />
             Feminino
           </span>
@@ -171,7 +193,14 @@ function App() {
         <button
           type="submit"
           disabled={
-            errors.name || errors.email || errors.civilStatus || errors.gender
+            errors.name ||
+            errors.email ||
+            errors.civilStatus ||
+            errors.gender ||
+            !name ||
+            !email ||
+            !civilStatus ||
+            !gender
           }
         >
           Enviar Formulário
