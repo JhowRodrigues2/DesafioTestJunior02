@@ -67,8 +67,8 @@ button {
 }
 .bar {
   background: #535bf2;
-  width: 75%;
   height: 100%;
+  width: 0;
 }
 label {
   margin-bottom: 5px;

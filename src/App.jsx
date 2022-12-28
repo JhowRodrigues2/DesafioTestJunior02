@@ -37,7 +37,7 @@ do formulário e zerar a barra de progresso novamente.
 import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const schema = yup
   .object({
@@ -72,26 +72,70 @@ function App() {
   } = useForm({ resolver: yupResolver(schema) });
 
   const [name, setName] = useState("");
-  const onSubmit = (e) => {
-    setName(e.name);
-  };
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [civilStatus, setCivilStatus] = useState("");
+
+  const onSubmit = (e) => {};
+
+  function counterPercent() {
+    let value = 0;
+
+    if (name) {
+      value += 25;
+    }
+
+    if (email) {
+      value += 25;
+    }
+    if (civilStatus) {
+      value += 25;
+    }
+    if (gender) {
+      value += 25;
+    }
+    return value;
+  }
+  counterPercent();
+
   return (
     <div className="App">
       <form className="form-group" onSubmit={handleSubmit(onSubmit)}>
         <h1>progresso do formulário</h1>
         <div className="bar-container">
-          <div className="bar"></div>
+          <div
+            className="bar"
+            style={{
+              width: `${counterPercent()}%`,
+            }}
+          ></div>
         </div>
         <label htmlFor="name">Nome Completo</label>
-        <input type="text" name="name" id="name" {...register("name")} />
+        <input
+          type="text"
+          name="name"
+          id="name"
+          {...register("name", { onBlur: (e) => setName(e.target.value) })}
+        />
         <span className="error-message"> {errors.name?.message}</span>
 
         <label htmlFor="email">E-mail</label>
-        <input type="text" name="email" id="email" {...register("email")} />
+        <input
+          type="text"
+          name="email"
+          id="email"
+          {...register("email", { onBlur: (e) => setEmail(e.target.value) })}
+        />
+
         <span className="error-message">{errors.email?.message}</span>
 
         <label htmlFor="">Estado Civil</label>
-        <select name="civilStatus" {...register("civilStatus")}>
+        <select
+          name="civilStatus"
+          {...register("civilStatus", {
+            onBlur: (e) => setCivilStatus(e.target.value),
+          })}
+        >
           <option value="">- selecione...</option>
           <option value="solteiro">Solteiro</option>
           <option value="casado">Casado</option>
@@ -106,7 +150,9 @@ function App() {
               type="radio"
               name="gender"
               value="masculino"
-              {...register("gender")}
+              {...register("gender", {
+                onChange: (e) => setGender(e.target.value),
+              })}
             />
             Masculino
           </span>
